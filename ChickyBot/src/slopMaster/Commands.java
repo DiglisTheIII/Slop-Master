@@ -5,14 +5,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message.MentionType;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -572,6 +576,22 @@ public class Commands extends ListenerAdapter {
 		}
 		if(event.getAuthor().getId().equals("600705350223659024")) {
 			event.getMessage().reply("<@600705350223659024> has been banned :)").queue();
+		}
+	
+		for(int i = 0; i < args.length; i++) {
+			boolean isAdmin = false;
+			for(int j = 0; j < adminIDs.length; j++) {
+				if(event.getAuthor().getId().equals(adminIDs[j])) {
+					isAdmin = true;
+				}
+			}
+			if(args[i].equalsIgnoreCase("genshin") && !isAdmin) {
+				event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById("932112631546916884")).queue();
+				event.getMessage().reply("Muted lol").queue();
+			}
+			else if(args[i].equalsIgnoreCase("genshin") && isAdmin) {
+				event.getMessage().reply("i cant mute you :(").queue();
+			}
 		}
 	}
 	public int joeCheck(int joeCount) {

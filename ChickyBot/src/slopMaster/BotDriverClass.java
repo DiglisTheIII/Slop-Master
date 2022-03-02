@@ -1,15 +1,17 @@
 package slopMaster;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.security.auth.login.LoginException;
 
-import com.fasterxml.jackson.core.JsonParser;
-
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class BotDriverClass {
 	
