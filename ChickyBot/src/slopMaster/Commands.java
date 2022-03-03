@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 
 
 
@@ -56,6 +57,8 @@ public class Commands extends ListenerAdapter {
 	public JoeFileCount joeFile = new JoeFileCount();
 	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+		//List<Role> allRoles = event.getGuild().getRoles();
+		//allRoles = allRoles.subList(0, allRoles.size() - 1);
 		String[] args = event.getMessage().getContentRaw().split(" ");
 		try {
 			if(args[0].equalsIgnoreCase(prefix + "gotohell")) {
@@ -594,67 +597,28 @@ public class Commands extends ListenerAdapter {
 			}
 		}
 		
+		List<Role> allRoles = event.getGuild().getRoles();
+		allRoles = allRoles.subList(0, allRoles.size() - 1);
 		if(args[0].equalsIgnoreCase(prefix + "role")) {
 			String role = "";
-			if(args.length > 1) {
+			if(args.length > 2) {
 				for(int i = 1; i < args.length; i++) {
 					role += args[i] + " ";
+					//patman was here
 				}
-			} else if(args.length == 1) {
+			} else if(args.length == 2) {
 				role = args[1];
 			}
-			role = role.substring(0, role.length() - 1).toLowerCase();
-			switch(role) {
-			case "old ass ring":
-				event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById("946640752694399046")).queue();
-				event.getChannel().sendMessage("roled").queue();
-				break;
-			case "Scott Wozniak hater":
-				event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById("945115259528687677")).queue();
-				event.getChannel().sendMessage("roled").queue();
-				break;
-			case "Gark Pones":
-				event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById("932487896403951647")).queue();
-				event.getChannel().sendMessage("roled").queue();
-				break;
-			case "dumbass":
-				event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById("932520619684282479")).queue();
-				event.getChannel().sendMessage("roled").queue();
-				break;
-			default:
-				event.getMessage().reply("this role doesnt exist loser").queue();
-			}
-		}
-		
-		if(args[0].equalsIgnoreCase(prefix + "removerole")) {
-			String role = "";
-			if(args.length > 1) {
-				for(int i = 1; i < args.length; i++) {
-					role += args[i] + " ";
+			for(int i = 8; i < allRoles.size(); i++) {
+				if(role.equals(allRoles.get(i).toString().substring(2).replaceAll("[0-9()]", ""))) {
+					String rolee = allRoles.get(i).toString().replaceAll("[a-zA-Z():]", "").trim();
+					System.out.println(rolee);
+					event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById(rolee)).queue();
+					event.getChannel().sendMessage("roled").queue();
+				} else {
+					event.getChannel().sendMessage("that shit dont exist fr!").queue();
+					break;
 				}
-			} else if(args.length == 1) {
-				role = args[1];
-			}
-			role = role.substring(0, role.length() - 1);
-			switch(role) {
-			case "Old ass ring":
-				event.getGuild().removeRoleFromMember(event.getMember(), event.getGuild().getRoleById("946640752694399046")).queue();
-				event.getChannel().sendMessage("unroled").queue();
-				break;
-			case "Scott Wozniak hater":
-				event.getGuild().removeRoleFromMember(event.getMember(), event.getGuild().getRoleById("945115259528687677")).queue();
-				event.getChannel().sendMessage("unroled").queue();
-				break;
-			case "Gark Pones":
-				event.getGuild().removeRoleFromMember(event.getMember(), event.getGuild().getRoleById("932487896403951647")).queue();
-				event.getChannel().sendMessage("unroled").queue();
-				break;
-			case "dumbass":
-				event.getGuild().removeRoleFromMember(event.getMember(), event.getGuild().getRoleById("932520619684282479")).queue();
-				event.getChannel().sendMessage("unroled").queue();
-				break;
-			default:
-				event.getMessage().reply("this role doesnt exist loser").queue();
 			}
 		}
 	}
