@@ -20,7 +20,8 @@ public class BotDriverClass {
 		jda.addEventListeners(new Commands());
 		jda.build();
 		System.out.println(file.readFile(file.joe));
-		
+		String arg = "my name is walter hartwell white";
+		int i = arg.indexOf(' ');
 	}
 
 } 
