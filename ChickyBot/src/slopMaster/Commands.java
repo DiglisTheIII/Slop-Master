@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IMentionable;
@@ -51,8 +52,6 @@ public class Commands extends ListenerAdapter {
 	public String[] gifPathArray = {"C:/Users/mmmmm/Desktop/chicken/acorn.gif",
 			"C:/Users/mmmmm/Desktop/chicken/dance.gif"};
 	
-	public String[] adminIDs = {"695688150466428989", "530269428185825290", "508100678758170644", "267030980210982923", "939905297240178769", "256920677385371649", "944587799888285737", "936468736532172800"};
-	
 	
 	public JoeFileCount joeFile = new JoeFileCount();
 	@Override
@@ -61,36 +60,7 @@ public class Commands extends ListenerAdapter {
 		//allRoles = allRoles.subList(0, allRoles.size() - 1);
 		String[] args = event.getMessage().getContentRaw().split(" ");
 		String userStr = event.getAuthor().toString().substring(2).replaceAll("[0-9()]", "");
-		try {
-			if(args[0].equalsIgnoreCase(prefix + "gotohell")) {
-				boolean isAdmin = true;
-				if(!event.getGuild().getMember(event.getAuthor()).hasPermission(net.dv8tion.jda.api.Permission.ADMINISTRATOR)) {
-					event.getChannel().sendMessage("You are not an administrator").queue();
-					isAdmin = false;
-				}
-				if(args.length == 1 && isAdmin) {
-					event.getChannel().sendMessage("Invalid command syntax");
-				}
-				else if(event.getMessage().getMentionedMembers().isEmpty() && isAdmin) {
-					event.getGuild().ban(args[1], 0, "Banned").queue();
-				} 
-				else if(isAdmin) {
-					event.getGuild().ban(event.getMessage().getMentionedMembers().get(0), 0, "banned").queue();
-				}
-			
-				try {
-					FileWriter myWriter = new FileWriter(f);
-					myWriter.write(event.getMessage().getMentionedMembers().toString() + " has been cleared\n");
-					myWriter.close();
-					System.out.println("Channel update log: SUCCESSFUL");
-				} catch (IOException e) {
-			    		System.out.println("Channel update log: FAILURE... File Not Found Exception");
-			    		e.printStackTrace();
-				}
-			}
-		} catch(Exception nullUser) {
-			event.getChannel().sendMessage("User not found").queue();
-		}
+		
 		if(args[0].equalsIgnoreCase(prefix + "helpme")) {
 			event.getMessage().getAuthor().openPrivateChannel().flatMap(channel -> channel.sendMessage("Command List:\n"
 					+ "s$hi - Slop Master replies with Greetings \n"
@@ -112,22 +82,13 @@ public class Commands extends ListenerAdapter {
 					+ "s$listen - Sets Slop Master's activity to listening to a custom song."
 					+ "s$lonely - Sets Slop Master's status to Do Not Disturb")).queue();
 		}
-		
 		if(args[0].equalsIgnoreCase(prefix + "silence")) {
-			Member member = event.getMessage().getMentionedMembers().get(0);
-			User author = event.getMessage().getAuthor();
-			try {
-				boolean isAdmin = true;
-				if(!event.getGuild().getMember(author).hasPermission(net.dv8tion.jda.api.Permission.ADMINISTRATOR)) {
-					event.getChannel().sendMessage("You are not an administrator idiot!");
-					isAdmin = false;
-				} 
-				if(isAdmin) {
-					event.getGuild().addRoleToMember(member, event.getGuild().getRoleById("932112631546916884")).queue();
-					event.getChannel().sendMessage(member.getAsMention() + " Has been muted :)").queue();
-				}
-			} catch(Exception e) {
-					event.getChannel().sendMessage("User is null").queue();
+			List<Member> mentionedMember = event.getMessage().getMentionedMembers();
+			if(event.getMember().isOwner() || event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+				event.getGuild().addRoleToMember(mentionedMember.get(0), event.getGuild().getRoleById("932112631546916884")).queue();
+				event.getChannel().sendMessage(mentionedMember.get(0).getAsMention() + " has been silenced").queue();
+			} else if(event.getMember().isOwner() || !event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+				event.getMessage().reply("you cant do that").queue();
 			}
 		}
 		if(args[0].equalsIgnoreCase(prefix + "hi")) {
@@ -358,12 +319,9 @@ public class Commands extends ListenerAdapter {
 			
 			int totalJoe = joeCount;
 			if(joeCount == maximumJoe) {
-				for(int i = 0; i < adminIDs.length; i++) {
-					if(event.getAuthor().getId().equals(adminIDs[i])) {
-						event.getChannel().sendMessage("They respawned!!!!").queue();
-						joeCount = 0;
-						i = adminIDs.length;
-					}
+				if(event.getMember().isOwner() || event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+					event.getChannel().sendMessage("They respawned!!!!").queue();
+					joeCount = 0;
 				}
 			} else if(joeCount < maximumJoe) {
 				totalJoe += randCounter;
@@ -378,24 +336,6 @@ public class Commands extends ListenerAdapter {
 			}
 			
 		}
-		
-		/*
-		for(int i = 0; i < args.length; i++) {
-			User user = event.getMember().getUser();
-			if(args[i].equalsIgnoreCase("genshin")) {
-				user.openPrivateChannel().queue(channel -> channel.sendMessage("Haha idior").queue());
-				event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById("932112631546916884")).queue();
-			}
-			
-			try {
-				PrintWriter pw = new PrintWriter(new FileWriter(f, true));
-				pw.println(event.getAuthor().toString() + " has been muted for talking about genshin impact");
-				pw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		*/
 		
 		if(args[0].equalsIgnoreCase(prefix + "play")) {
 			String activity = "";
@@ -434,19 +374,14 @@ public class Commands extends ListenerAdapter {
 			event.getMessage().reply("Horny").queue();
 		}
 		if(args[0].equalsIgnoreCase(prefix + "nuke")) {
-			boolean isPosAdmin = false;
-			for(int i = 0; i < adminIDs.length; i++) {
-				if(event.getAuthor().getId().equals(adminIDs[i])) {
-					isPosAdmin = true;
-					event.getMessage().delete().queue();
-					event.getChannel().sendMessage("This channel will be cleared in 10 seconds").queue();
-					event.getChannel().createCopy().queue();
-		            event.getChannel().delete().queueAfter(10, TimeUnit.SECONDS);
-		            break;
-				} else if(!isPosAdmin) {
-					event.getChannel().sendMessage("You are not an admin, get fucked").queue();
-					break;
-				}
+			if(event.getMember().isOwner() || event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+				event.getMessage().delete().queue();
+				event.getChannel().sendMessage("This channel will be cleared in 10 seconds").queue();
+				event.getChannel().createCopy().queue();
+	            event.getChannel().delete().queueAfter(10, TimeUnit.SECONDS);
+	    
+			} else if(!event.getMember().isOwner() || event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+				event.getChannel().sendMessage("You are not an admin, get fucked").queue();
 			}
 			try {
 				PrintWriter pw = new PrintWriter(new FileWriter(f, true));
@@ -584,11 +519,10 @@ public class Commands extends ListenerAdapter {
 	
 		for(int i = 0; i < args.length; i++) {
 			boolean isAdmin = false;
-			for(int j = 0; j < adminIDs.length; j++) {
-				if(event.getAuthor().getId().equals(adminIDs[j])) {
-					isAdmin = true;
-				}
+			if(event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+				isAdmin = true;
 			}
+			
 			if(args[i].equalsIgnoreCase("genshin") && !isAdmin) {
 				event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById("932112631546916884")).queue();
 				event.getMessage().reply("Muted lol").queue();
@@ -597,7 +531,6 @@ public class Commands extends ListenerAdapter {
 				event.getMessage().reply("i cant mute you :(").queue();
 			}
 		}
-		
 		List<Role> allRoles = event.getGuild().getRoles();
 		allRoles = allRoles.subList(0, allRoles.size() - 1);
 		if(args[0].equalsIgnoreCase(prefix + "role")) {
@@ -639,19 +572,82 @@ public class Commands extends ListenerAdapter {
 				System.out.println(e);
 			}
 		}
-		if(args[0].equalsIgnoreCase("test")) {
-			String arg = "";
-			for(int i = 1; i < args.length; i++) {
-				arg += args[i] + " ";
-			}
-			arg = arg.trim();
-			System.out.println(arg);
-			for(int i = 8; i < allRoles.size(); i++) {
-				if(arg.equals(allRoles.get(i).toString().substring(2).replaceAll("[0-9()]", ""))) {
-					System.out.println("works");
-				} else {
-					System.out.println("doesnt work");
+		if(args[0].equalsIgnoreCase(prefix + "unrole")) {
+			try {
+				String role = "";
+				boolean nullRole = false;
+				for(int i = 0; i < allRoles.size(); i++) {
+					System.out.println(allRoles.get(i));
 				}
+				if(args.length > 1) {
+					for(int i = 1; i < args.length; i++) {
+						role += args[i] + " ";
+					}
+				} else if(args.length == 2) {
+					role = args[1];
+				}
+				for(int i = 8; i < allRoles.size(); i++) {
+					if(role.contains(allRoles.get(i).toString().substring(2).replaceAll("[0-9()]", ""))) {
+						String rolee = allRoles.get(i).toString().replaceAll("[a-zA-Z():]", "").substring(1).trim();
+						//System.out.println(rolee);
+						event.getGuild().removeRoleFromMember(event.getMember(), event.getGuild().getRoleById(rolee)).queue();
+						event.getChannel().sendMessage("role taken away. bye bye").queue();
+						nullRole = true;
+						try {
+							PrintWriter pw = new PrintWriter(new FileWriter(f, true));
+							pw.println(userStr + " was removed from role:  " + role);
+							pw.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					} 
+				}
+				if(!nullRole) {
+					event.getChannel().sendMessage("this shit aint fr!").queue();
+				}
+			} catch(Exception e) {
+				System.out.println(e);
+			}
+		}
+		if(args[0].equalsIgnoreCase(prefix + "rolelist")) {
+			String[] rolesArr = new String[allRoles.size()];
+			String everyRole = "";
+			for(int i = 0; i < allRoles.size(); i++) {
+				rolesArr[i] = allRoles.get(i).toString().substring(2).replaceAll("[0-9()]", "");
+				everyRole += rolesArr[i] += "\n";
+			}
+			final String privateRollList = everyRole;
+			event.getMessage().reply("snent").queue();
+			event.getMessage().getAuthor().openPrivateChannel().flatMap(channel -> channel.sendMessage(privateRollList)).queue();
+		}
+		if(args[0].equalsIgnoreCase("computer") && args[1].equalsIgnoreCase("show") && args[2].equalsIgnoreCase("me") && args[3].equalsIgnoreCase("heaven")) {
+			event.getChannel().sendFile(new File("C:/Users/mmmmm/Desktop/botgifs/heaven.png")).queue();
+		}
+		int count = event.getGuild().getMemberCount();
+		if(args[0].equalsIgnoreCase(prefix + "usercount")) {
+			event.getChannel().sendMessage("There are " + count + " people in the server").queue();
+		}
+		if(args[0].equalsIgnoreCase(prefix + "banme")) {
+			int troll = count - 1;
+			event.getMessage().delete().queue();
+			event.getMessage().reply(event.getAuthor().getAsMention() + " has been banned *(" + troll + ")*").queue();
+		}
+		if(args[0].equalsIgnoreCase(prefix + "gotohell")) {
+			List<Member> mentions = event.getMessage().getMentionedMembers();
+			if(event.getMember().isOwner() || event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+				event.getGuild().ban(mentions.get(0), Integer.parseInt(args[2])).queue();
+				event.getChannel().sendMessage(mentions.get(0).getAsMention() + " has been banned").queue();
+			} else if(!event.getMember().isOwner() || !event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+				event.getMessage().reply("You cannot do that").queue();
+			}
+		}
+		if(args[0].equalsIgnoreCase("computer") && args[1].equalsIgnoreCase("am") && args[2].equalsIgnoreCase("i") && args[3].equalsIgnoreCase("cool")) {
+			if(event.getMember().isOwner() || event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+				event.getMessage().reply("Yes").queue();
+			} else if(!event.getMember().isOwner() || !event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+				final String emoteID = "quaint:949743841337024532";
+				event.getMessage().reply("No").queue();
+				event.getMessage().addReaction(emoteID).queue();
 			}
 		}
 	}
