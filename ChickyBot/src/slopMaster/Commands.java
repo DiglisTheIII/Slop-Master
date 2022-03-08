@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.api.utils.concurrent.Task;
 
 
 
@@ -513,9 +514,6 @@ public class Commands extends ListenerAdapter {
 			long id = Long.parseLong(replace.replaceAll("[^0-9]", ""));
 			event.getChannel().sendMessage("<@" + String.valueOf(id) + "> has been slopped.").queue();
 		}
-		if(event.getAuthor().getId().equals("600705350223659024")) {
-			event.getMessage().reply("<@600705350223659024> has been banned :)").queue();
-		}
 	
 		for(int i = 0; i < args.length; i++) {
 			boolean isAdmin = false;
@@ -531,10 +529,13 @@ public class Commands extends ListenerAdapter {
 				event.getMessage().reply("i cant mute you :(").queue();
 			}
 		}
+		
+		//Puts every role in the server, minus @everyone in the list
 		List<Role> allRoles = event.getGuild().getRoles();
 		allRoles = allRoles.subList(0, allRoles.size() - 1);
 		if(args[0].equalsIgnoreCase(prefix + "role")) {
 			try {
+				//Debug stuff
 				String role = "";
 				boolean nullRole = false;
 				for(int i = 0; i < allRoles.size(); i++) {
@@ -542,15 +543,19 @@ public class Commands extends ListenerAdapter {
 				}
 				if(args.length > 1) {
 					for(int i = 1; i < args.length; i++) {
+						//This takes the message, drops the command prefix, and just gets the role they want
 						role += args[i] + " ";
 						//patman was here
 					}
 					//System.out.println(role);
 				} else if(args.length == 2) {
+					//If it is just a one word role, this sents the role variable to that argument
 					role = args[1];
 				}
 				for(int i = 8; i < allRoles.size(); i++) {
+					//checks if role is equal to the raw string name of a sublist of allRoles
 					if(role.contains(allRoles.get(i).toString().substring(2).replaceAll("[0-9()]", ""))) {
+						//Gets rid of everything in the Role but the ID, which is a long value as string
 						String rolee = allRoles.get(i).toString().replaceAll("[a-zA-Z():]", "").substring(1).trim();
 						//System.out.println(rolee);
 						event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById(rolee)).queue();
@@ -642,14 +647,51 @@ public class Commands extends ListenerAdapter {
 			}
 		}
 		if(args[0].equalsIgnoreCase("computer") && args[1].equalsIgnoreCase("am") && args[2].equalsIgnoreCase("i") && args[3].equalsIgnoreCase("cool")) {
-			if(event.getMember().isOwner() || event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+			if(event.getMember().isOwner() || event.getMember().hasPermission(Permission.ADMINISTRATOR) && !event.getAuthor().getId().equals("530269428185825290")) {
 				event.getMessage().reply("Yes").queue();
-			} else if(!event.getMember().isOwner() || !event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+			} else if(!event.getMember().isOwner() || !event.getMember().hasPermission(Permission.ADMINISTRATOR) || event.getAuthor().getId().equals("530269428185825290")) {
 				final String emoteID = "quaint:949743841337024532";
 				event.getMessage().reply("No").queue();
 				event.getMessage().addReaction(emoteID).queue();
 			}
 		}
+		if(args[0].equalsIgnoreCase("computer") && args[1].equalsIgnoreCase("do") && args[2].equalsIgnoreCase("i") && args[3].equalsIgnoreCase("suck") && args[4].equalsIgnoreCase("dick")) {
+			if(event.getAuthor().getId().equals("530269428185825290")) {
+				event.getChannel().sendMessage("YES!").queue();
+			} else {
+				event.getChannel().sendMessage("NO!").queue();
+			}
+		}
+		for(int i = 0; i < args.length; i++) {
+			if(args[i].equalsIgnoreCase("sand") && !event.getAuthor().isBot()) {
+				event.getChannel().sendMessage("i eated all the sand").queue();
+			}
+		}
+		List<Member> membercount = event.getGuild().getMembers();
+		String[] memberList = new String[membercount.size()];
+		for(int i = 0; i < membercount.size(); i++) {
+			int par = membercount.get(i).toString().indexOf("(");
+			memberList[i] = membercount.get(i).toString().substring(3, par);
+		}
+		for(String membs : memberList) {
+			System.out.println(membs);
+		}
+		if(args[0].equalsIgnoreCase(prefix + "memberlist") && (event.getMember().hasPermission(Permission.ADMINISTRATOR) || event.getMember().isOwner())) {
+			String memberListForChannel = "";
+			for(int i = 0; i < memberList.length; i++) {
+				memberListForChannel += memberList[i] += "\n";
+			}
+			event.getChannel().sendMessage(memberListForChannel).queue();
+		}
+		if(args[0].equalsIgnoreCase("trolenames") && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+			Member self = event.getMember();
+			for(Member member : event.getGuild().getMembers()) {
+				if(self.canInteract(member)) {
+					member.modifyNickname("obey").queue();
+				}
+			}
+		}
+		
 	}
 	public int joeCheck(int joeCount) {
 		if(joeCount >= 10) {
