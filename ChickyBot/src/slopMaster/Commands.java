@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 
@@ -469,7 +470,7 @@ public class Commands extends ListenerAdapter {
 			}
 		}
 		
-		if(event.getChannel().isNSFW() && args[0].equalsIgnoreCase("horny")) {
+		if(event.getChannel().isNSFW() && args[0].equalsIgnoreCase("horny") && !event.getAuthor().isBot()) {
 			event.getChannel().sendFile(new File("C:/Users/mmmmm/desktop/botgifs/nfw.gif")).queue();
 		} else if((!event.getChannel().isNSFW()) && args[0].equalsIgnoreCase("horny")) {
 			event.getChannel().sendMessage("You cannot be horny here").queue();
@@ -673,9 +674,6 @@ public class Commands extends ListenerAdapter {
 			int par = membercount.get(i).toString().indexOf("(");
 			memberList[i] = membercount.get(i).toString().substring(3, par);
 		}
-		for(String membs : memberList) {
-			System.out.println(membs);
-		}
 		if(args[0].equalsIgnoreCase(prefix + "memberlist") && (event.getMember().hasPermission(Permission.ADMINISTRATOR) || event.getMember().isOwner())) {
 			String memberListForChannel = "";
 			for(int i = 0; i < memberList.length; i++) {
@@ -687,12 +685,20 @@ public class Commands extends ListenerAdapter {
 			Member self = event.getMember();
 			for(Member member : event.getGuild().getMembers()) {
 				if(self.canInteract(member)) {
-					member.modifyNickname("obey").queue();
+					member.modifyNickname("pufferfish death sentence").queue();
 				}
 			}
 		}
-		
+		if(args[0].equalsIgnoreCase("geo")) {
+			event.getMessage().delete();
+			event.getChannel().sendMessage("<@256920677385371649> doo doo shitter is a bad game!").queue();
+		}
+		Member anthony = event.getGuild().getMemberById("629024069332893711");
+		if(!anthony.getNickname().equals("dickhead")) {
+			anthony.modifyNickname("dickhead").queue();
+		}
 	}
+	
 	public int joeCheck(int joeCount) {
 		if(joeCount >= 10) {
 			try {

@@ -27,7 +27,7 @@ public class BotDriverClass {
 				.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS)
 				.enableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.ONLINE_STATUS)
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
-				.addEventListeners(new Commands())
+				.addEventListeners(new Commands(), new UpdateNameEventClass(), new BanLeague())
 				.setActivity(Activity.playing("slopping innocent people (i hate them)"))
 				.setStatus(OnlineStatus.ONLINE)
 				.build();
