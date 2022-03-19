@@ -7,12 +7,16 @@ public class UpdateNameEventClass extends ListenerAdapter {
 	
 	public void onGuildMemberUpdateNickname(GuildMemberUpdateNicknameEvent event) {
 		
-		if(event.getEntity().getId().equals("629024069332893711") && !event.getEntity().getNickname().equals("dickhead")) {
-			event.getEntity().modifyNickname("dickhead").queue();
+		try {
+			if(event.getEntity().getId().equals("629024069332893711") && !event.getEntity().getNickname().equals("dickhead")) {
+				event.getEntity().modifyNickname("dickhead").queue();
+			}
+			if(event.getEntity().getId().equals("600705350223659024") && !event.getEntity().getNickname().equals("kid lover"))  {
+				event.getEntity().modifyNickname("kid lover").queue();
+			}
+		}catch(NullPointerException e) {
+			System.out.println(e);
 		}
-		if(event.getEntity().getId().equals("600705350223659024") && !event.getEntity().getNickname().equals("kid lover"))  {
-			event.getEntity().modifyNickname("kid lover").queue();
-		}
-	}
 	
+	}
 }

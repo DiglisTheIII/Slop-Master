@@ -5,15 +5,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message.MentionType;
@@ -21,9 +25,6 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.managers.Presence;
-import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
-import net.dv8tion.jda.api.utils.concurrent.Task;
 
 
 
@@ -681,11 +682,31 @@ public class Commands extends ListenerAdapter {
 			}
 			event.getChannel().sendMessage(memberListForChannel).queue();
 		}
+		/*
+		int[] nums = new int[event.getGuild().getMemberCount()];
+		for(int i = 0; i < nums.length; i++) {
+			nums[i] = ThreadLocalRandom.current().nextInt(0, event.getGuild().getMemberCount());
+		}
+		for(int num : nums) {
+			System.out.println(nums[num]);
+		}
+		*/
 		if(args[0].equalsIgnoreCase("trolenames") && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			Member self = event.getMember();
+			Random randNum = new Random();
+		    Set<Integer>set = new LinkedHashSet<Integer>();
+		    while (set.size() < event.getGuild().getMemberCount()) {
+		       set.add(randNum.nextInt(event.getGuild().getMemberCount()) + 1);
+		    }
+		    ArrayList<Integer> arr = new ArrayList<Integer>();
+		    for(Iterator<Integer> it = set.iterator(); it.hasNext();) {
+		    	arr.add(it.next());
+		    }
+		    int i = 0;
 			for(Member member : event.getGuild().getMembers()) {
-				if(self.canInteract(member)) {
-					member.modifyNickname("pufferfish death sentence").queue();
+				if(self.canInteract(member) && i < arr.size()) {
+					event.getGuild().modifyNickname(member, "balls lover " + arr.get(i)).queue();
+					i++;
 				}
 			}
 		}
@@ -693,12 +714,26 @@ public class Commands extends ListenerAdapter {
 			event.getMessage().delete();
 			event.getChannel().sendMessage("<@256920677385371649> doo doo shitter is a bad game!").queue();
 		}
-		Member anthony = event.getGuild().getMemberById("629024069332893711");
-		if(!anthony.getNickname().equals("dickhead")) {
-			anthony.modifyNickname("dickhead").queue();
+		if(args[0].equalsIgnoreCase("Say") && args[1].equalsIgnoreCase("the") && args[2].equalsIgnoreCase("line") && args[3].equalsIgnoreCase(",") && args[4].equalsIgnoreCase("bulbjak!")) {
+			event.getMessage().reply("Learn to LIGHTEN up! ").queue();
+		}
+		
+		if(args[0].equalsIgnoreCase("among") && args[1].equalsIgnoreCase("us")) {
+			event.getChannel().sendMessage("sus").queue();
 		}
 	}
 	
+	public ArrayList<Integer> getNums(int size) {
+		ArrayList<Integer> nums = new ArrayList<Integer>();
+		int i = size;
+		while(nums.size() <= i) {
+			int j = ThreadLocalRandom.current().nextInt(0, 36);
+			if(!nums.contains(j)) {
+				nums.add(j);
+			}
+		}
+		return nums;
+	}
 	public int joeCheck(int joeCount) {
 		if(joeCount >= 10) {
 			try {
