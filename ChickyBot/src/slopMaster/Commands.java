@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.managers.Presence;
 
 
 
@@ -36,6 +38,7 @@ public class Commands extends ListenerAdapter {
 	public File f = new File("log.txt");
 	public int randCounter = ThreadLocalRandom.current().nextInt(50, 250);
 	public int sloppy = 0;
+	public int yed = 0;
 	public String[] pathArray = {"C:/Users/mmmmm/Desktop/chicken/1.png", 
 			"C:/Users/mmmmm/Desktop/chicken/2.png",
 			"C:/Users/mmmmm/Desktop/chicken/3.png",
@@ -63,7 +66,7 @@ public class Commands extends ListenerAdapter {
 		//allRoles = allRoles.subList(0, allRoles.size() - 1);
 		String[] args = event.getMessage().getContentRaw().split(" ");
 		String userStr = event.getAuthor().toString().substring(2).replaceAll("[0-9()]", "");
-		
+		final boolean isServer = event.getGuild().getName().equals("Femboy Sorority");
 		if(args[0].equalsIgnoreCase(prefix + "helpme")) {
 			event.getMessage().getAuthor().openPrivateChannel().flatMap(channel -> channel.sendMessage("Command List:\n"
 					+ "s$hi - Slop Master replies with Greetings \n"
@@ -85,6 +88,7 @@ public class Commands extends ListenerAdapter {
 					+ "s$listen - Sets Slop Master's activity to listening to a custom song."
 					+ "s$lonely - Sets Slop Master's status to Do Not Disturb")).queue();
 		}
+		
 		if(args[0].equalsIgnoreCase(prefix + "silence")) {
 			List<Member> mentionedMember = event.getMessage().getMentionedMembers();
 			if(event.getMember().isOwner() || event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
@@ -556,7 +560,7 @@ public class Commands extends ListenerAdapter {
 				}
 				for(int i = 8; i < allRoles.size(); i++) {
 					//checks if role is equal to the raw string name of a sublist of allRoles
-					if(role.contains(allRoles.get(i).toString().substring(2).replaceAll("[0-9()]", ""))) {
+					if(role.contains(allRoles.get(i).toString().substring(2).replaceAll("[0-9()]", ""))  && (!args[1].equalsIgnoreCase("Sinful") && !args[2].equalsIgnoreCase("Fool"))) {
 						//Gets rid of everything in the Role but the ID, which is a long value as string
 						String rolee = allRoles.get(i).toString().replaceAll("[a-zA-Z():]", "").substring(1).trim();
 						//System.out.println(rolee);
@@ -572,7 +576,7 @@ public class Commands extends ListenerAdapter {
 						}
 					} 
 				}
-				if(!nullRole) {
+				if(!nullRole  && (args[1].equalsIgnoreCase("Sinful") && args[2].equalsIgnoreCase("Fool"))) {
 					event.getChannel().sendMessage("this shit aint fr!").queue();
 				}
 			} catch(Exception e) {
@@ -594,7 +598,7 @@ public class Commands extends ListenerAdapter {
 					role = args[1];
 				}
 				for(int i = 8; i < allRoles.size(); i++) {
-					if(role.contains(allRoles.get(i).toString().substring(2).replaceAll("[0-9()]", ""))) {
+					if(role.contains(allRoles.get(i).toString().substring(2).replaceAll("[0-9()]", "")) && (!args[1].equalsIgnoreCase("Sinful") && !args[2].equalsIgnoreCase("Fool"))) {
 						String rolee = allRoles.get(i).toString().replaceAll("[a-zA-Z():]", "").substring(1).trim();
 						//System.out.println(rolee);
 						event.getGuild().removeRoleFromMember(event.getMember(), event.getGuild().getRoleById(rolee)).queue();
@@ -609,7 +613,7 @@ public class Commands extends ListenerAdapter {
 						}
 					} 
 				}
-				if(!nullRole) {
+				if(!nullRole && (args[1].equalsIgnoreCase("Sinful") && args[2].equalsIgnoreCase("Fool"))) {
 					event.getChannel().sendMessage("this shit aint fr!").queue();
 				}
 			} catch(Exception e) {
@@ -682,15 +686,11 @@ public class Commands extends ListenerAdapter {
 			}
 			event.getChannel().sendMessage(memberListForChannel).queue();
 		}
-		/*
-		int[] nums = new int[event.getGuild().getMemberCount()];
-		for(int i = 0; i < nums.length; i++) {
-			nums[i] = ThreadLocalRandom.current().nextInt(0, event.getGuild().getMemberCount());
+		
+		if(args[0].equalsIgnoreCase("fuckyou")) {
+			event.getGuild().moveVoiceMember(event.getGuild().getMemberById("256920677385371649"), event.getGuild().getVoiceChannelById("932093403322273793")).queue();
 		}
-		for(int num : nums) {
-			System.out.println(nums[num]);
-		}
-		*/
+		
 		if(args[0].equalsIgnoreCase("trolenames") && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			Member self = event.getMember();
 			Random randNum = new Random();
@@ -705,35 +705,181 @@ public class Commands extends ListenerAdapter {
 		    int i = 0;
 			for(Member member : event.getGuild().getMembers()) {
 				if(self.canInteract(member) && i < arr.size()) {
-					event.getGuild().modifyNickname(member, "balls lover " + arr.get(i)).queue();
+					event.getGuild().modifyNickname(member, "conrad").queue();
 					i++;
 				}
 			}
 		}
-		if(args[0].equalsIgnoreCase("geo")) {
+		if(args[0].equalsIgnoreCase("geo") && event.getGuild().getName().equals("Femboy Sorority")) {
 			event.getMessage().delete();
 			event.getChannel().sendMessage("<@256920677385371649> doo doo shitter is a bad game!").queue();
 		}
-		if(args[0].equalsIgnoreCase("Say") && args[1].equalsIgnoreCase("the") && args[2].equalsIgnoreCase("line") && args[3].equalsIgnoreCase(",") && args[4].equalsIgnoreCase("bulbjak!")) {
-			event.getMessage().reply("Learn to LIGHTEN up! ").queue();
+		if(args[0].equalsIgnoreCase("Say") && args[1].equalsIgnoreCase("the") && args[2].equalsIgnoreCase("line,") && args[3].equalsIgnoreCase("bulbjak!")) {
+			if(event.getGuild().getName().equals("Femboy Sorority")) {
+				event.getMessage().reply("Learn to LIGHTEN up! <:bulbjak:954624531375460393>").queue();
+			}
 		}
 		
 		if(args[0].equalsIgnoreCase("among") && args[1].equalsIgnoreCase("us")) {
 			event.getChannel().sendMessage("sus").queue();
 		}
-	}
-	
-	public ArrayList<Integer> getNums(int size) {
-		ArrayList<Integer> nums = new ArrayList<Integer>();
-		int i = size;
-		while(nums.size() <= i) {
-			int j = ThreadLocalRandom.current().nextInt(0, 36);
-			if(!nums.contains(j)) {
-				nums.add(j);
+		
+		if(isServer && args[0].equalsIgnoreCase("computer") && args[1].equalsIgnoreCase("activate") && args[2].equalsIgnoreCase("iguana")) {
+			event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/325351648849428480/901152594729259008/Iguana.mp4").queue();
+		}
+		if(isServer && args[0].equalsIgnoreCase("computer") && args[1].equalsIgnoreCase("deactivate") && args[2].equalsIgnoreCase("iguana")) {
+			event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/325351648849428480/901152499686330428/Iguana.mp4").queue();
+		}
+
+		if(args[0].equalsIgnoreCase("fnaf")) {
+			event.getChannel().sendMessage("Connection terminated. I'm sorry to interupt you Elizabeth, if you still even remember that name, but I'm afraid you've been misinformed. You're not here to recieve a gift, nor have you been called here by the individual you assume, although you have indeed been called. You have all been called here, into a labyrinth of sounds and smells, misdirection and misfortune. A labirynth with no exit, a maze with no prize. You don't even realize that you are trapped. Your lust for blood has driven you in endless circles, chasing the cries of children in some unseen chamber always seeming so near, yet somehow out of reach. But you will never find them, none of you will. This is where your story ends.\r\n"
+					+ "\r\n"
+					+ "And to you, my brave volunteer, who somehow found this job listing not intended for you, although there was a way out planned for you, I have a feeling that's not what you want. I have a feeling that you are right where you want to be. I am remaining as well. I am nearby. This place will not be remembered and the memory of everything that started this can finally begin to fade away, as the agony of every tragedy should. And to you monsters trapped in the corridors, be still, and give up your spirits. They don't belong to you. For most of you, I believe there is peace and perhaps more waiting for you after the smoke clears. Although for one of you, the darkest pit of hell has opened to swallow you whole, so don't keep the devil waiting old friend.\r\n"
+					+ "\r\n").queue();
+			event.getChannel().sendMessage("My daughter, if you can hear me, I knew you would return as well. It's in your nature to protect the innocent. I'm sorry that on that day, the day you were shut out and left to die, no one was there to lift you up into their arms, the way you lifted others into yours. And then, what became of you? I should have known you wouldn't be contempt to just disappear, not my daughter. I couldn't save you then, so let me save you now.\r\n"
+					+ "\r\n"
+					+ "It's time to rest. For you, and those you have carried in your arms. This ends, for all of us. End communication.").queue();
+		}
+		if(isServer) {
+			if(args[0].equalsIgnoreCase("jangosong")) {
+				event.getChannel().sendMessage("When I wake up, well I know I'm gonna be,\r\n"
+						+ "I'm gonna be the man who wakes up next to you\r\n"
+						+ "When I go out, yeah I know I'm gonna be\r\n"
+						+ "I'm gonna be the man who goes along with you\r\n"
+						+ "When I get drunk, well I know I'm gonna be\r\n"
+						+ "I'm gonna be the man who gets drunk next to you\r\n"
+						+ "And when I haver, hey I know I'm gonna be\r\n"
+						+ "I'm gonna be the man who's havering to you\r\n"
+						+ "And I would roll 500 miles\r\n"
+						+ "And I would roll 500 more\r\n"
+						+ "Just to be the man who rolls a thousand miles\r\n"
+						+ "To fall down at your door\r\n"
+						+ "When I'm working, yes I know I'm gonna be\r\n"
+						+ "I'm gonna be the man who's working hard for you\r\n"
+						+ "And when the money, comes in for the work I do\r\n"
+						+ "I'll pass almost every penny on to you\r\n"
+						+ "When I come home(When I come home), well I know I'm gonna be\r\n"
+						+ "I'm gonna be the man who comes back home to you\r\n"
+						+ "And when I grow old, well I know I'm gonna be\r\n"
+						+ "I'm gonna be the man who's growing old with you\r\n"
+						+ "But I would roll 500 miles\r\n"
+						+ "And I would roll 500 more\r\n"
+						+ "Just to be the man who roles a thousand miles\r\n"
+						+ "To fall down at your door\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da Da Da Dun Diddle Un Diddle Un Diddle Uh Da Da\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da Da Da Dun Diddle Un Diddle Un Diddle Uh Da Da\r\n"
+						+ "When I'm lonely, well I know I'm gonna be\r\n"
+						+ "I'm gonna be the man who's lonely without you\r\n"
+						+ "And when I'm dreaming, well I know I'm gonna dream\r\n"
+						+ "I'm gonna Dream about the time when I'm with you\r\n"
+						+ "When I go out(When I go out), well I know I'm gonna be\r\n"
+						+ "I'm gonna be the man who goes along with you\r\n"
+						+ "And when I come home(When I come home), yes I know I'm gonna be\r\n"
+						+ "I'm gonna be the man who comes back home with you\r\n"
+						+ "I'm gonna be the man who's coming home with you\r\n"
+						+ "And I would roll 500 miles\r\n").queue();
+				event.getChannel().sendMessage("And I would roll 500 more\r\n"
+						+ "Just to be the man who rolled a thousand miles\r\n"
+						+ "To fall down at your door\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da Da Da Dun Diddle Un Diddle Un Diddle Uh Da Da\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da Da Da Dun Diddle Un Diddle Un Diddle Uh Da Da\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da Da Da Dun Diddle Un Diddle Un Diddle Uh Da Da\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da da da (da da da)\r\n"
+						+ "Da Da Da Dun Diddle Un Diddle Un Diddle Uh Da Da\r\n"
+						+ "And I would walk 500 miles\r\n"
+						+ "And I would roll 500 more\r\n"
+						+ "Just to be the man who rolled a thousand miles\r\n"
+						+ "To fall down at your door\r\n"
+						+ "Eh\r\n"
+						+ "Don't like it\r\n"
+						+ "I love the Welsh").queue();
 			}
 		}
-		return nums;
+		if(args[0].equalsIgnoreCase(prefix + "oosted?")) {
+			if(event.getGuild().getBoostCount() == 0) {
+				event.getChannel().sendMessage("not oosted <:cubic:941574305748242493>").queue();
+			} else if(event.getGuild().getBoostCount() > 0) {
+				event.getChannel().sendMessage("oosted (" + event.getGuild().getBoostCount() + ") times! <:aaaaaaaaaaahhhh:932080598066024448>").queue();
+			}
+		}
+
+		int len = args.length;
+		if(len == 1 && args[0].equalsIgnoreCase(prefix + "coinflip")) {
+			event.getChannel().sendMessage("tails").queue();
+			len = -1;
+		} else if(args.length > 1) {
+			int ascii = 0;
+			if(args[0].equalsIgnoreCase(prefix + "coinflip")) {
+				try {
+					String arg = args[1];
+					if ((Integer) Integer.parseInt(args[1]) instanceof Integer) {
+						try {
+							if(Integer.parseInt(args[1]) < Integer.MAX_VALUE) {
+								event.getChannel().sendMessage("Heads: 0 \nTails: " + Integer.parseInt(args[1])).queue();
+							}
+						}catch(Exception e) {
+							event.getChannel().sendMessage("Heads: 0 \nTails: " + args[1]).queue();
+						}
+						
+					} 
+				}catch(NumberFormatException e) {
+					String arg = args[1];
+					int iterator = arg.length();
+					if(args[1] instanceof String) {
+						for(int i = 0; i < iterator - 1; i++) {
+							ascii += (int) arg.charAt(i);
+						}
+						event.getChannel().sendMessage("Heads: 0 \nTails: " + ascii).queue();
+					} 
+				}
+			}
+			if(args[0].equalsIgnoreCase(prefix + "realcoinflip")) {
+				String memberGuess = args[1];
+				int flip = ThreadLocalRandom.current().nextInt(0, 2);
+				String head = "";
+				String tail = "";
+				boolean win = false;
+				if(flip == 0) {
+					head = "heads";
+				} else if(flip == 1) {
+					tail = "tails";
+				}
+				if(memberGuess.equals(head) || memberGuess.equals(tail)) {
+					win = true;
+				} else if(!memberGuess.equals(head) || !memberGuess.equals(tail)) {
+					win = false;
+				}
+				if(win) {
+					event.getChannel().sendMessage("Result is: " + head + "" + tail + " you win").queue();
+				} else {
+					event.getChannel().sendMessage("Result is: " + head + "" + tail + " you lose").queue();
+				}
+			}
+		} 
+		if(args[0].equalsIgnoreCase("disgusting")) {
+			event.getChannel().sendFile(new File("C:/Users/mmmmm/Desktop/botgifs/anthony.png")).queue();
+		}
 	}
+	
 	public int joeCheck(int joeCount) {
 		if(joeCount >= 10) {
 			try {

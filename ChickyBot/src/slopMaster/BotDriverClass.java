@@ -19,10 +19,10 @@ public class BotDriverClass {
 		String token = Files.readAllLines(Paths.get("C:/Users/mmmmm/Desktop/botgifs/token.txt")).get(0);
 		JoeFileCount file = new JoeFileCount();
 		//Caches members, messages, and builds the bot for use
-		JDA jda = JDABuilder.createDefault(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
-				.disableCache(CacheFlag.VOICE_STATE, CacheFlag.EMOTE)
-				.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS)
-				.enableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.ONLINE_STATUS)
+		JDA jda = JDABuilder.createDefault(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES)
+				.disableCache(CacheFlag.EMOTE)
+				.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES)
+				.enableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.ONLINE_STATUS, CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE)
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.addEventListeners(new Commands(), new UpdateNameEventClass(), new BanLeague())
 				.setActivity(Activity.playing("slopping innocent people (i hate them)"))
