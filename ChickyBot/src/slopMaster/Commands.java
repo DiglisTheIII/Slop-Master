@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -398,7 +400,7 @@ public class Commands extends ListenerAdapter {
 		if(args[0].equalsIgnoreCase(prefix + "killyourself")) {
 			if(event.getAuthor().getId().equals("695688150466428989")) {
 				event.getChannel().sendMessage("Ok :( goodbye").queue();
-				event.getJDA().shutdown();
+				event.getJDA().shutdownNow();
 				try {
 					PrintWriter pw = new PrintWriter(new FileWriter(f, true));
 					pw.println("Slop Master shut down for maintenance");
@@ -1034,6 +1036,7 @@ public class Commands extends ListenerAdapter {
 					}
 				}
 			}
+			
 		}
 		try {
 			if(event.getMessage().getAttachments().get(0).getFileName().equals("image0-1-1.gif") && event.getMessage().getAttachments() != null) {
