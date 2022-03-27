@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class SlopTimer extends Thread {
-	File f = new File("C:/Users/mmmmm/Desktop/botgifs/bottimer.txt");
+	File f = new File("bottimer.txt");
 	public void run() {
 		try {
 			try {

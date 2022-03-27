@@ -34,7 +34,7 @@ public class BotDriverClass {
 				.build();
 		//jda.addEventListeners(new Commands());
 		System.out.println(file.readFile(file.joe));
-		File f = new File("C:/Users/mmmmm/Desktop/botgifs/uptime.txt");
+		File f = new File("uptime.txt");
 		int seconds = 0;
 		try {
 			try {
