@@ -1,16 +1,17 @@
 package slopMaster;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -21,14 +22,13 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.managers.Presence;
-
-
 
 public class Commands extends ListenerAdapter {
 	public String message = "";
@@ -85,7 +85,7 @@ public class Commands extends ListenerAdapter {
 					+ "Along with a bunch of stupid file shit.\n"
 					+ "s$reset - This increases the maximum by a random amount between 50-249.\n"
 					+ "s$play - Sets Slop Master's activity to playing a custom game of the senders choosing.\n"
-					+ "s$listen - Sets Slop Master's activity to listening to a custom song."
+					+ "s$listen - Sets Slop Master's activity to listening to a custom song.\n"
 					+ "s$lonely - Sets Slop Master's status to Do Not Disturb")).queue();
 		}
 		
@@ -101,9 +101,6 @@ public class Commands extends ListenerAdapter {
 		if(args[0].equalsIgnoreCase(prefix + "hi")) {
 			event.getMessage().reply("Greetings, " + event.getAuthor().getAsMention()).queue();
 		}
-		if(args[0].equalsIgnoreCase(prefix + "die")) {
-			event.getMessage().reply("Love you too " + event.getAuthor().getAsMention() + "!").queue();
-		}
 		if(args[0].equalsIgnoreCase(prefix + "grease")) {
 			User user = event.getAuthor();
 			for(int i = 0; i < 5; i++) {	
@@ -117,22 +114,21 @@ public class Commands extends ListenerAdapter {
 			}
 		}
 		if(args[0].equalsIgnoreCase(prefix + "suckmyballs")) {
-			String[] userIDs = {"508100678758170644", "530269428185825290", "695688150466428989", "600705350223659024", "381437831878279168", "629024069332893711", "399304447575982082"};
-			int randID = ThreadLocalRandom.current().nextInt(0, 7);
+			List<Member> memberIDs = event.getGuild().getMembers();
+			int randID = ThreadLocalRandom.current().nextInt(0, memberIDs.size());
 			event.getChannel().sendTyping().queue();
-			event.getChannel().sendMessage("Suck my balls <@" + userIDs[randID] + ">").queue();
+			event.getChannel().sendMessage("Suck my balls <@" + memberIDs.get(randID).getId() + ">").queue();
 		}
 		if(args[0].equalsIgnoreCase(prefix + "lean")) {
 			event.getChannel().sendFile(new File("C:/Users/mmmmm/Desktop/botgifs/carnage.mp4")).queue();
 		}
 		
 		if(args[0].equalsIgnoreCase("computer") && args[1].equalsIgnoreCase("show") && args[2].equalsIgnoreCase("me") && args[3].equalsIgnoreCase("hell")) {
-			File f = new File("C:/Users/mmmmm/Desktop/botgifs/skeleton-burning.gif");
 			EmbedBuilder embed = new EmbedBuilder();
 			
 			embed.setTitle(" ");
-			embed.setImage("attachment://hell.gif");
-			event.getChannel().sendMessage(embed.build()).addFile(f, "hell.gif").queue();
+			embed.setImage("https://cdn.discordapp.com/attachments/956332484705013820/956628941211316254/hell.gif");
+			event.getChannel().sendMessage(embed.build()).queue();
 			
 		}
 		if(args[0].equalsIgnoreCase(prefix + "activity")) {
@@ -185,6 +181,7 @@ public class Commands extends ListenerAdapter {
 				event.getChannel().sendMessage(embed.build()).addFile(file, "chicken.png").queue();
 			}
 		}
+		
 		if(args[0].equalsIgnoreCase(prefix + "specialModCommand")) {
 			if(event.getAuthor().getId().equals("695688150466428989")) {
 				for(int i = 0; i < 5; i++) {
@@ -206,7 +203,7 @@ public class Commands extends ListenerAdapter {
 			String replace = mentionedUser.toString();
 			long id = Long.parseLong(replace.replaceAll("[^0-9]", ""));
 			event.getChannel().sendMessage("<@" + String.valueOf(id) + ">").queue();
-			event.getChannel().sendFile(new File("C:/Users/mmmmm/Desktop/botgifs/bounce.gif")).queue();
+			event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/931616914227208203/956269644455493632/bounce.gif").queue();
 			event.getMessage().delete().queue();
 		}
 		if(args[0].equalsIgnoreCase(prefix + "goodnight")) {
@@ -404,7 +401,7 @@ public class Commands extends ListenerAdapter {
 				event.getJDA().shutdown();
 				try {
 					PrintWriter pw = new PrintWriter(new FileWriter(f, true));
-					pw.println("ChickenBot shut down for maintenance");
+					pw.println("Slop Master shut down for maintenance");
 					pw.close();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -421,7 +418,7 @@ public class Commands extends ListenerAdapter {
 				event.getJDA().shutdown();
 				try {
 					PrintWriter pw = new PrintWriter(new FileWriter(f, true));
-					pw.println("ChickenBot shutdown for miscellaneous reasons");
+					pw.println("Slop Master shutdown for miscellaneous reasons");
 					pw.close();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -480,20 +477,28 @@ public class Commands extends ListenerAdapter {
 		} else if((!event.getChannel().isNSFW()) && args[0].equalsIgnoreCase("horny")) {
 			event.getChannel().sendMessage("You cannot be horny here").queue();
 		}
-		
-		if(args[0].equalsIgnoreCase("slop") && args[1].equalsIgnoreCase("me")) {
-			sloppy++;
-			if(sloppy == 1) {
-				event.getMessage().reply("You have been slopped " + sloppy + " time.").queue();
-			} else if(sloppy > 1) {
-				event.getMessage().reply("You have been slopped " + sloppy + " times.").queue();
+		try {
+			if(args[0].equalsIgnoreCase("slop") && args[1].equalsIgnoreCase("me")) {
+				sloppy++;
+				if(sloppy == 1) {
+					event.getMessage().reply("You have been slopped " + sloppy + " time.").queue();
+				} else if(sloppy > 1) {
+					event.getMessage().reply("You have been slopped " + sloppy + " times.").queue();
+				}
+				try {
+					PrintWriter pw = new PrintWriter(new FileWriter(f, true));
+					pw.println(event.getAuthor().getAsTag() + " has been slopped");
+					pw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-			try {
-				PrintWriter pw = new PrintWriter(new FileWriter(f, true));
-				pw.println(event.getAuthor().getAsTag() + " has been slopped");
-				pw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+		}catch(IndexOutOfBoundsException e) {
+			if(args[0].equalsIgnoreCase("slop")) {
+				IMentionable mentionedUser =  event.getMessage().getMentions(MentionType.USER).get(0);
+				String replace = mentionedUser.toString();
+				long id = Long.parseLong(replace.replaceAll("[^0-9]", ""));
+				event.getChannel().sendMessage("<@" + String.valueOf(id) + "> has been slopped.").queue();
 			}
 		}
 		if(args[0].equalsIgnoreCase("unslop") && args[1].equalsIgnoreCase("me")) {
@@ -513,12 +518,7 @@ public class Commands extends ListenerAdapter {
 		}
 		if(args[0].equalsIgnoreCase(prefix + "incarcerate")) {
 			event.getChannel().sendFile(new File("C:/Users/mmmmm/Desktop/botgifs/prison.jpg")).queue();
-		}
-		if(args[0].equalsIgnoreCase("slop")) {
-			IMentionable mentionedUser =  event.getMessage().getMentions(MentionType.USER).get(0);
-			String replace = mentionedUser.toString();
-			long id = Long.parseLong(replace.replaceAll("[^0-9]", ""));
-			event.getChannel().sendMessage("<@" + String.valueOf(id) + "> has been slopped.").queue();
+			event.getJDA().shutdown();
 		}
 	
 		for(int i = 0; i < args.length; i++) {
@@ -555,10 +555,10 @@ public class Commands extends ListenerAdapter {
 					}
 					//System.out.println(role);
 				} else if(args.length == 2) {
-					//If it is just a one word role, this sents the role variable to that argument
+					//If it is just a one word role, this sets the role variable to that argument
 					role = args[1];
 				}
-				for(int i = 8; i < allRoles.size(); i++) {
+				for(int i = 8; i < allRoles.size(); i++) { //i = 8 specifically for my server REMINDER: go back and make it dynamic per server
 					//checks if role is equal to the raw string name of a sublist of allRoles
 					if(role.contains(allRoles.get(i).toString().substring(2).replaceAll("[0-9()]", ""))  && (!args[1].equalsIgnoreCase("Sinful") && !args[2].equalsIgnoreCase("Fool"))) {
 						//Gets rid of everything in the Role but the ID, which is a long value as string
@@ -621,13 +621,13 @@ public class Commands extends ListenerAdapter {
 			}
 		}
 		if(args[0].equalsIgnoreCase(prefix + "rolelist")) {
-			String[] rolesArr = new String[allRoles.size()];
+			String[] rolesArr = new String[allRoles.size()]; //setting string array length as allRoles
 			String everyRole = "";
 			for(int i = 0; i < allRoles.size(); i++) {
-				rolesArr[i] = allRoles.get(i).toString().substring(2).replaceAll("[0-9()]", "");
+				rolesArr[i] = allRoles.get(i).toString().substring(2).replaceAll("[0-9()]", ""); //replacing all the useless mumbo jumbo in the roles so its easier to read
 				everyRole += rolesArr[i] += "\n";
 			}
-			final String privateRollList = everyRole;
+			final String privateRollList = everyRole; //this only exists since only final variables can be sent in dms
 			event.getMessage().reply("snent").queue();
 			event.getMessage().getAuthor().openPrivateChannel().flatMap(channel -> channel.sendMessage(privateRollList)).queue();
 		}
@@ -643,29 +643,36 @@ public class Commands extends ListenerAdapter {
 			event.getMessage().delete().queue();
 			event.getMessage().reply(event.getAuthor().getAsMention() + " has been banned *(" + troll + ")*").queue();
 		}
-		if(args[0].equalsIgnoreCase(prefix + "gotohell")) {
-			List<Member> mentions = event.getMessage().getMentionedMembers();
+		if(args[0].equalsIgnoreCase(prefix + "ban")) {
+			List<Member> mentions = event.getMessage().getMentionedMembers(); //gets mentioned members from the command
 			if(event.getMember().isOwner() || event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-				event.getGuild().ban(mentions.get(0), Integer.parseInt(args[2])).queue();
+				event.getGuild().ban(mentions.get(0), Integer.parseInt(args[2])).queue(); //setting time argument as an int to for ban timing
 				event.getChannel().sendMessage(mentions.get(0).getAsMention() + " has been banned").queue();
 			} else if(!event.getMember().isOwner() || !event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				event.getMessage().reply("You cannot do that").queue();
 			}
 		}
-		if(args[0].equalsIgnoreCase("computer") && args[1].equalsIgnoreCase("am") && args[2].equalsIgnoreCase("i") && args[3].equalsIgnoreCase("cool")) {
-			if(event.getMember().isOwner() || event.getMember().hasPermission(Permission.ADMINISTRATOR) && !event.getAuthor().getId().equals("530269428185825290")) {
-				event.getMessage().reply("Yes").queue();
+		if((args[0].equalsIgnoreCase("computer") && args[1].equalsIgnoreCase("am") && args[2].equalsIgnoreCase("i") && args[3].equalsIgnoreCase("cool"))) {
+			event.getMessage().reply("yes").queue();
+			/*
 			} else if(!event.getMember().isOwner() || !event.getMember().hasPermission(Permission.ADMINISTRATOR) || event.getAuthor().getId().equals("530269428185825290")) {
 				final String emoteID = "quaint:949743841337024532";
 				event.getMessage().reply("No").queue();
 				event.getMessage().addReaction(emoteID).queue();
 			}
+			*/
 		}
+		
 		if(args[0].equalsIgnoreCase("computer") && args[1].equalsIgnoreCase("do") && args[2].equalsIgnoreCase("i") && args[3].equalsIgnoreCase("suck") && args[4].equalsIgnoreCase("dick")) {
 			if(event.getAuthor().getId().equals("530269428185825290")) {
 				event.getChannel().sendMessage("YES!").queue();
 			} else {
 				event.getChannel().sendMessage("NO!").queue();
+			}
+		}
+		if(args[0].equalsIgnoreCase("computer") && args[1].equalsIgnoreCase("do") && args[2].equalsIgnoreCase("i") && args[3].equalsIgnoreCase("deserve") && args[4].equalsIgnoreCase("admin?")) {
+			if(event.getMember().getId().equals("695688150466428989") || event.getMember().getId().equals("283409606779338762")) {
+				event.getChannel().sendMessage("yes!").queue();
 			}
 		}
 		for(int i = 0; i < args.length; i++) {
@@ -674,23 +681,49 @@ public class Commands extends ListenerAdapter {
 			}
 		}
 		List<Member> membercount = event.getGuild().getMembers();
+		ArrayList<String> memberNames = new ArrayList<String>();
+		
+		for(int i = 0; i < membercount.size(); i++) {
+			memberNames.add(i, membercount.get(i).getUser().toString().substring(2, membercount.get(i).getUser().toString().indexOf("(")));
+		}
 		String[] memberList = new String[membercount.size()];
 		for(int i = 0; i < membercount.size(); i++) {
-			int par = membercount.get(i).toString().indexOf("(");
-			memberList[i] = membercount.get(i).toString().substring(3, par);
+			memberList[i] = memberNames.get(i);
 		}
-		if(args[0].equalsIgnoreCase(prefix + "memberlist") && (event.getMember().hasPermission(Permission.ADMINISTRATOR) || event.getMember().isOwner())) {
+		if(args[0].equalsIgnoreCase(prefix + "funnymemberlist") /*&& (event.getMember().hasPermission(Permission.ADMINISTRATOR) || event.getMember().isOwner())*/) {
 			String memberListForChannel = "";
 			for(int i = 0; i < memberList.length; i++) {
-				memberListForChannel += memberList[i] += "\n";
+				if(membercount.get(i).hasPermission(Permission.ADMINISTRATOR) && !membercount.get(i).isOwner() && !membercount.get(i).getId().equals("508100678758170644")) {
+					memberListForChannel += "Admin: " + memberList[i] + "#" + membercount.get(i).getUser().getDiscriminator() + "(" + membercount.get(i).getUser().getId() + ")" + "\n";
+				} else if(membercount.get(i).isOwner()) {
+					memberListForChannel += "Ring Leader: " + memberList[i] + "#" + membercount.get(i).getUser().getDiscriminator() + "(" + membercount.get(i).getUser().getId() + ")" + "\n";
+				} else if(membercount.get(i).getId().equals("508100678758170644")) {
+					  memberListForChannel += "Racist: " + memberList[i] + "#" + membercount.get(i).getUser().getDiscriminator() + "(" + membercount.get(i).getUser().getId() + ")" + "\n";	
+				} else {
+					memberListForChannel += " \"Regular\" people: " + memberList[i] + "#" + membercount.get(i).getUser().getDiscriminator() + "(" + membercount.get(i).getUser().getId() + ")" + "\n";
+				}
 			}
-			event.getChannel().sendMessage(memberListForChannel).queue();
+			EmbedBuilder eb = new EmbedBuilder();
+			eb.setTitle("Members in " + event.getGuild().getName());
+			eb.setDescription(memberListForChannel);
+			event.getChannel().sendMessage(eb.build()).queue();
 		}
 		
 		if(args[0].equalsIgnoreCase("fuckyou")) {
 			event.getGuild().moveVoiceMember(event.getGuild().getMemberById("256920677385371649"), event.getGuild().getVoiceChannelById("932093403322273793")).queue();
 		}
 		
+		List<Attachment> att = event.getMessage().getAttachments();
+		for(int i = 0; i < att.size(); i++) {
+			if(att.get(i).getFileName().equals("plish.gif") || att.get(i).getFileName().equals("image0-2.gif")) {
+				event.getMessage().delete().queue();
+			}
+		}
+		for(int i = 0; i < att.size(); i++) {
+			if(event.getChannel().getId().equals("956785211281113169") && !att.get(i).getFileExtension().equals("gif")) {
+				event.getMessage().delete().queue();
+			}
+		}
 		if(args[0].equalsIgnoreCase("trolenames") && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 			Member self = event.getMember();
 			Random randNum = new Random();
@@ -705,12 +738,14 @@ public class Commands extends ListenerAdapter {
 		    int i = 0;
 			for(Member member : event.getGuild().getMembers()) {
 				if(self.canInteract(member) && i < arr.size()) {
-					event.getGuild().modifyNickname(member, "conrad").queue();
+					event.getGuild().modifyNickname(member, null).queue();
 					i++;
 				}
 			}
+		} else if(args[0].equalsIgnoreCase("trolenames") && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+			event.getMessage().reply("You cannot do that idiot").queue();
 		}
-		if(args[0].equalsIgnoreCase("geo") && event.getGuild().getName().equals("Femboy Sorority")) {
+		if(args[0].equalsIgnoreCase("geo") && isServer) {
 			event.getMessage().delete();
 			event.getChannel().sendMessage("<@256920677385371649> doo doo shitter is a bad game!").queue();
 		}
@@ -821,64 +856,195 @@ public class Commands extends ListenerAdapter {
 				event.getChannel().sendMessage("oosted (" + event.getGuild().getBoostCount() + ") times! <:aaaaaaaaaaahhhh:932080598066024448>").queue();
 			}
 		}
-
-		int len = args.length;
+		if(args[0].equalsIgnoreCase("sundowner")) {
+			event.getChannel().sendMessage("<:sundowner:941904862805889045>").queue();
+		}
+		int len = args.length; //creates variable to test for args.length so i dont have to use it every time
 		if(len == 1 && args[0].equalsIgnoreCase(prefix + "coinflip")) {
 			event.getChannel().sendMessage("tails").queue();
-			len = -1;
+			len = -1; //sets len to -1 to break out of the if statement so it doesnt repeat forever
 		} else if(args.length > 1) {
-			int ascii = 0;
+			int ascii = 0; //declaring variable for ascii
 			if(args[0].equalsIgnoreCase(prefix + "coinflip")) {
 				try {
-					String arg = args[1];
-					if ((Integer) Integer.parseInt(args[1]) instanceof Integer) {
+					if ((Integer) Integer.parseInt(args[1]) instanceof Integer) { //tests if the second argument of the command contains an integer
 						try {
-							if(Integer.parseInt(args[1]) < Integer.MAX_VALUE) {
+							if(Integer.parseInt(args[1]) < Integer.MAX_VALUE) { //tests if it is below 32-bit integer limit, but JDA is weird and puts any number greater as a string, might get rid of this
 								event.getChannel().sendMessage("Heads: 0 \nTails: " + Integer.parseInt(args[1])).queue();
 							}
 						}catch(Exception e) {
-							event.getChannel().sendMessage("Heads: 0 \nTails: " + args[1]).queue();
+							event.getChannel().sendMessage("Heads: 0 \nTails: " + args[1]).queue(); //if, by some magic fuckery, it isnt an int it will display as a string. probably useless but might as well be safe
 						}
 						
 					} 
 				}catch(NumberFormatException e) {
-					String arg = args[1];
+					String arg = args[1]; //gets the second argument as a string
 					int iterator = arg.length();
-					if(args[1] instanceof String) {
+					if(args[1] instanceof String) { //tests if argument is a string object
 						for(int i = 0; i < iterator - 1; i++) {
-							ascii += (int) arg.charAt(i);
+							ascii += (int) arg.charAt(i); //adds ascii values of each character in the string together
 						}
 						event.getChannel().sendMessage("Heads: 0 \nTails: " + ascii).queue();
 					} 
 				}
 			}
+
+			 
 			if(args[0].equalsIgnoreCase(prefix + "realcoinflip")) {
 				String memberGuess = args[1];
 				int flip = ThreadLocalRandom.current().nextInt(0, 2);
-				String head = "";
-				String tail = "";
+				String heads = "";
+				String tails = "";
 				boolean win = false;
 				if(flip == 0) {
-					head = "heads";
+					heads = "heads";
 				} else if(flip == 1) {
-					tail = "tails";
+					tails = "tails";
 				}
-				if(memberGuess.equals(head) || memberGuess.equals(tail)) {
+				if(memberGuess.equals(heads) || memberGuess.equals(tails)) {
 					win = true;
-				} else if(!memberGuess.equals(head) || !memberGuess.equals(tail)) {
+				} else if(!memberGuess.equals(heads) || !memberGuess.equals(tails)) {
 					win = false;
 				}
 				if(win) {
-					event.getChannel().sendMessage("Result is: " + head + "" + tail + " you win").queue();
+					event.getChannel().sendMessage("Result is: " + heads + "" + tails + " you win!").queueAfter(5, TimeUnit.SECONDS);
 				} else {
-					event.getChannel().sendMessage("Result is: " + head + "" + tail + " you lose").queue();
+					event.getChannel().sendMessage("Result is: " + heads + "" + tails + " you lose <:METH:932089247350013972>").queueAfter(5, TimeUnit.SECONDS);
 				}
 			}
 		} 
 		if(args[0].equalsIgnoreCase("disgusting")) {
-			event.getChannel().sendFile(new File("C:/Users/mmmmm/Desktop/botgifs/anthony.png")).queue();
+			event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/931616914227208203/956032356077146162/20220322_223021.jpg").queue();
 		}
+		if(args[0].equalsIgnoreCase("Fortnite") && args[1].equalsIgnoreCase("battle") && args[2].equalsIgnoreCase("pass")) {
+			EmbedBuilder embed = new EmbedBuilder();
+			
+			embed.setTitle("I just shit out my ass");
+			embed.setImage("https://cdn.discordapp.com/attachments/939768536295952507/956249267104780308/fortnite.gif");
+			event.getChannel().sendMessage(embed.build()).queue();
+			
+		}
+		String[] kiss = {"kiss", "kissing", "ki55", "ki55ing", "k1551ng", "ki551ng", "k155", "k1ss", "k1ssing", "ki5sing", "kis5ing", "k1s5ing", "k15sing"};
+		for(int i = 0; i < args.length; i++) {
+			for(int j = 0; j < kiss.length; j++) {
+				if(args[i].equalsIgnoreCase(kiss[j])) {
+					event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/939768536295952507/956259632299528192/yoad.png").queue();
+					break;
+				}
+			}
+		}
+		for(int i = 0; i < args.length; i++) {
+			if(args[i].equalsIgnoreCase("Big") && args[i + 1].equalsIgnoreCase("Blungus") && i <= args.length) {
+				event.getChannel().sendMessage("<:blungus:953389471917826098>").queue();
+			}
+		}
+		for(int i = 0; i < args.length; i++) {
+			if(args[i].equalsIgnoreCase("jerma")) {
+				event.getMessage().addReaction("jerm:955920874349932624").queue();
+			}
+		}
+		for(int i = 0; i < args.length; i++) {
+			if(args[i].equalsIgnoreCase("ena")) {
+				event.getMessage().addReaction("enar:942667786612781066").queue();
+			}
+		}
+		
+		if(args[0].equalsIgnoreCase(prefix + "isPrimitiveType")) {
+			try {
+				if((Integer) Integer.parseInt(args[1]) instanceof Integer) {
+					event.getChannel().sendMessage("number").queue();
+				}
+			}catch(NumberFormatException e) {
+				if(args[1] instanceof String) {
+					event.getChannel().sendMessage("letters").queue();
+				}
+			}catch(IndexOutOfBoundsException x) {
+				event.getChannel().sendMessage("null").queue();
+			}
+		}
+		for(int i = 0; i < args.length; i++) {
+			if(args[i].equalsIgnoreCase("sayaarat")) {
+				try {
+					event.getMessage().delete().queue();
+					event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/945260997453697034/956375825995948143/ezgif.com-gif-maker_12.gif").queue();
+					i = args.length;
+				}catch(InsufficientPermissionException e) {
+					event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/945260997453697034/956375825995948143/ezgif.com-gif-maker_12.gif").queue();
+					i = args.length;
+				}
+			}
+		}
+		if(args[0].equalsIgnoreCase(prefix + "memberlist")) {
+			EmbedBuilder eb = new EmbedBuilder();
+			eb.setTitle("Members of " + event.getGuild().getName());
+			event.getGuild().getMembers().parallelStream().map(member -> member.getUser().getName() + "#" + member.getUser().getDiscriminator() + " (" + member.getUser().getId()).reduce((s, s2) -> s + ")\n" + s2).ifPresent(eb::setDescription);
+			event.getChannel().sendMessage(eb.build()).queue();
+		}
+		if(args[0].equalsIgnoreCase("lungus")) {
+			event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/945260997453697034/956772642617167882/Screenshot_358.png").queue();
+		}
+		
+		if(args[0].equalsIgnoreCase(prefix + "differentiate")) {
+			int cons = Integer.parseInt(args[1].substring(0, 1));
+			String var = "x";
+			int exp = Integer.parseInt(args[1].substring(args[1].length() - 1, args[1].length()));
+			int consDeriv = exp * cons;
+			int expDeriv = exp - 1;
+			if(expDeriv == 1) {
+				event.getChannel().sendMessage(consDeriv + var).queue();
+			} else if(expDeriv > 1) {
+			event.getChannel().sendMessage(consDeriv + var + "^" + expDeriv).queue();
+			}
+		}
+		
+		ArrayList<String> bannedWords = new ArrayList<String>();
+		File f = new File("C:/Users/mmmmm/Desktop/botgifs/bannedwords.txt");
+		Member owner = event.getGuild().getOwner();
+		Member dig = event.getGuild().getMemberById("695688150466428989");
+		boolean isOwnerOnline = owner.getOnlineStatus().equals(OnlineStatus.ONLINE);
+		boolean isDigOnline = dig.getOnlineStatus().equals(OnlineStatus.ONLINE);
+		try {
+			Scanner sc = new Scanner(f);
+			while(sc.hasNextLine()) {
+				bannedWords.add(sc.nextLine());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		for(int i = 0; i < args.length; i++) {
+			for(String m : bannedWords) {
+				if(args[i].equalsIgnoreCase(m) && !event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+					event.getMessage().delete().queue();
+					event.getMember().ban(100, "Racial Slur").queue();
+					event.getChannel().sendMessage(event.getAuthor().getAsMention() + " has been banned.").queue();
+				} else if(args[i].equalsIgnoreCase(m) && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+					event.getMessage().delete().queue();
+					if(isDigOnline && !isOwnerOnline) {
+						dig.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage(event.getAuthor().getAsMention()
+								+ " said " + m)).queue();
+					} else if(!isDigOnline && isOwnerOnline) {
+						owner.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage(event.getAuthor().getAsMention()
+								+ " said " + m)).queue();
+					} else if(isDigOnline && isOwnerOnline) {
+						owner.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage(event.getAuthor().getAsMention()
+								+ " said " + m)).queue();
+					} else if(!isDigOnline && !isOwnerOnline) {
+						dig.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage(event.getAuthor().getAsMention()
+								+ " said " + m)).queue();
+					}
+				}
+			}
+		}
+		try {
+			if(event.getMessage().getAttachments().get(0).getFileName().equals("image0-1-1.gif") && event.getMessage().getAttachments() != null) {
+				event.getChannel().sendMessage("https://media.discordapp.net/attachments/505823512754257920/844031336599519292/image0-1-1.gif").queue();
+			}
+		}catch(Exception e) {
+			return;
+		}
+		
 	}
+
 	
 	public int joeCheck(int joeCount) {
 		if(joeCount >= 10) {
