@@ -32,36 +32,43 @@ public class BotDriverClass {
 				.setActivity(Activity.playing("slopping innocent people (i hate them)"))
 				.setStatus(OnlineStatus.ONLINE)
 				.build();
-		//jda.addEventListeners(new Commands());
 		System.out.println(file.readFile(file.joe));
 		File f = new File("uptime.txt");
+		printTimeToFile(f, false, 0);
 		int seconds = 0;
-		try {
-			try {
-				PrintWriter pw = new PrintWriter(new FileWriter(f, true));
-				if(java.time.LocalDate.now() == java.time.LocalDate.now()) {
-					pw.println("Current Uptime For: "  + java.time.LocalTime.now());
-					pw.close();
-				} else {
-					pw.println("Current Uptime Start At: "  + java.time.LocalDate.now());
-					pw.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} catch(Exception e) {
-			System.out.println("");
-		}
 		while(true) {
 			long mil = System.currentTimeMillis();
 			seconds++;
-			//System.out.println(seconds);
 			SlopTimer timer = new SlopTimer();
 			timer.start();
+			printTimeToFile(f, true, seconds);
+			Thread.sleep(1000 - mil % 1000);
+		}
+	}
+	
+	public static void printTimeToFile(File f, boolean thread, long sec) {
+		if(!thread) {
 			try {
 				try {
 					PrintWriter pw = new PrintWriter(new FileWriter(f, true));
-					pw.println("Current Uptime: "  + seconds);
+					if(java.time.LocalDate.now() == java.time.LocalDate.now()) { //Checks on the weird, theoretically possible case that the bot is started and doesnt start printing to the file as soon as the date changes
+						pw.println("Current Uptime For: "  + java.time.LocalTime.now());
+						pw.close();
+					} else {
+						pw.println("Current Uptime Start At: "  + java.time.LocalDate.now() + " " + java.time.LocalTime.now());
+						pw.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} catch(Exception e) {
+				System.out.println("");
+			}
+		} else if(thread) {
+			try {
+				try {
+					PrintWriter pw = new PrintWriter(new FileWriter(f, true));
+					pw.println("Current Uptime: "  + sec);
 					pw.close();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -69,10 +76,9 @@ public class BotDriverClass {
 			} catch(Exception e) {
 				System.out.println("");
 			}
-			Thread.sleep(1000 - mil % 1000);
 		}
 	}
-
+	
 } 
 
 
