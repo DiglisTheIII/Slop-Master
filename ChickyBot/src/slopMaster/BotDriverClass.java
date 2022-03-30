@@ -23,12 +23,13 @@ public class BotDriverClass {
 		String token = Files.readAllLines(Paths.get("C:/Users/mmmmm/Desktop/botgifs/token.txt")).get(0);
 		JoeFileCount file = new JoeFileCount();
 		//Caches members, messages, and builds the bot for use
+		@SuppressWarnings("unused")
 		JDA jda = JDABuilder.createDefault(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES)
 				.disableCache(CacheFlag.EMOTE)
 				.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES)
 				.enableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.ONLINE_STATUS, CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE)
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
-				.addEventListeners(new Commands(), new UpdateNameEventClass(), new BanLeague())
+				.addEventListeners(new Commands(), new UpdateNameEventClass(), new BanLeague(), new JoinEventHandler(), new OnMemberLeaveEvent())
 				.setActivity(Activity.playing("slopping innocent people (i hate them)"))
 				.setStatus(OnlineStatus.ONLINE)
 				.build();
@@ -68,7 +69,15 @@ public class BotDriverClass {
 			try {
 				try {
 					PrintWriter pw = new PrintWriter(new FileWriter(f, true));
-					pw.println("Current Uptime: "  + sec);
+					if(sec >= 3600 && sec % 3600 == 0) {
+						pw.println("Current Uptime: " + sec / 3600 + " hour(s)");
+					} else if(sec % 60 == 0 && sec < 3600) {
+						pw.println("Current Uptime: "  + sec / 60 + " minute(s)");
+						pw.close();
+					} else if(sec % 60 != 0 && sec < 60){
+						pw.println("Current Uptime: " + sec + " second(s)");
+						pw.close();
+					}
 					pw.close();
 				} catch (IOException e) {
 					e.printStackTrace();

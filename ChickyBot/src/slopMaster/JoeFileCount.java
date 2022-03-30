@@ -1,18 +1,16 @@
 package slopMaster;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 
 public class JoeFileCount {
 	
-	public static File joe;
+	public File joe;
 	
 	public JoeFileCount() {
 		joe = new File("C:/Users/mmmmm/Desktop/botgifs/joecount.txt/");

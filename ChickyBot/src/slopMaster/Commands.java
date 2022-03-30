@@ -6,8 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -1004,8 +1003,8 @@ public class Commands extends ListenerAdapter {
 		Member owner = event.getGuild().getOwner();
 		Member dig = event.getGuild().getMemberById("695688150466428989");
 		boolean isOwnerOnline = owner.getOnlineStatus().equals(OnlineStatus.ONLINE);
-		boolean isDigOnline = dig.getOnlineStatus().equals(OnlineStatus.ONLINE);
 		try {
+			@SuppressWarnings("resource")
 			Scanner sc = new Scanner(f);
 			while(sc.hasNextLine()) {
 				bannedWords.add(sc.nextLine());
@@ -1020,20 +1019,9 @@ public class Commands extends ListenerAdapter {
 					event.getMember().ban(100, "Racial Slur").queue();
 					event.getChannel().sendMessage(event.getAuthor().getAsMention() + " has been banned.").queue();
 				} else if(args[i].equalsIgnoreCase(m) && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+					Member alertee = isOwnerOnline ? owner : dig;
 					event.getMessage().delete().queue();
-					if(isDigOnline && !isOwnerOnline) {
-						dig.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage(event.getAuthor().getAsMention()
-								+ " said " + m)).queue();
-					} else if(!isDigOnline && isOwnerOnline) {
-						owner.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage(event.getAuthor().getAsMention()
-								+ " said " + m)).queue();
-					} else if(isDigOnline && isOwnerOnline) {
-						owner.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage(event.getAuthor().getAsMention()
-								+ " said " + m)).queue();
-					} else if(!isDigOnline && !isOwnerOnline) {
-						dig.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage(event.getAuthor().getAsMention()
-								+ " said " + m)).queue();
-					}
+					alertee.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage(event.getAuthor().getAsMention() + " said " + m)).queue();
 				}
 			}
 			
