@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -37,14 +39,19 @@ public class BotDriverClass {
 		File f = new File("uptime.txt");
 		printTimeToFile(f, false, 0);
 		int seconds = 0;
-		while(true) {
-			long mil = System.currentTimeMillis();
-			seconds++;
+		RuntimeMXBean uptime = ManagementFactory.getRuntimeMXBean();
+		boolean isRunning = true;
+		while(isRunning) {
+			clearConsole();
 			SlopTimer timer = new SlopTimer();
+			long mil = System.currentTimeMillis();
 			timer.start();
-			printTimeToFile(f, true, seconds);
 			Thread.sleep(1000 - mil % 1000);
 		}
+	}
+	
+	public static void clearConsole() {
+		System.out.println(System.lineSeparator().repeat(50));
 	}
 	
 	public static void printTimeToFile(File f, boolean thread, long sec) {

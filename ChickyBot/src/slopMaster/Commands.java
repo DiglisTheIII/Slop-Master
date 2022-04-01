@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -65,11 +66,13 @@ public class Commands extends ListenerAdapter {
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 		//List<Role> allRoles = event.getGuild().getRoles();
 		//allRoles = allRoles.subList(0, allRoles.size() - 1);
+		CommandShortcuts scts = new CommandShortcuts();
 		String[] args = event.getMessage().getContentRaw().split(" ");
 		String userStr = event.getAuthor().toString().substring(2).replaceAll("[0-9()]", "");
+		boolean isBot = event.getAuthor().isBot();
 		final boolean isServer = event.getGuild().getName().equals("Femboy Sorority");
 		if(args[0].equalsIgnoreCase(prefix + "helpme")) {
-			event.getMessage().getAuthor().openPrivateChannel().flatMap(channel -> channel.sendMessage("Command List:\n"
+			scts.sendDM(event, "Command List:\n"
 					+ "s$hi - Slop Master replies with Greetings \n"
 					+ "s$die - Slop Master replies with Love you too {@userID}\n"
 					+ "s$lean - Slop Master will send a video with an Asuka/Venom Lean Meme.\n"
@@ -87,20 +90,20 @@ public class Commands extends ListenerAdapter {
 					+ "s$reset - This increases the maximum by a random amount between 50-249.\n"
 					+ "s$play - Sets Slop Master's activity to playing a custom game of the senders choosing.\n"
 					+ "s$listen - Sets Slop Master's activity to listening to a custom song.\n"
-					+ "s$lonely - Sets Slop Master's status to Do Not Disturb")).queue();
+					+ "s$lonely - Sets Slop Master's status to Do Not Disturb");
 		}
 		
 		if(args[0].equalsIgnoreCase(prefix + "silence")) {
 			List<Member> mentionedMember = event.getMessage().getMentionedMembers();
 			if(event.getMember().isOwner() || event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 				event.getGuild().addRoleToMember(mentionedMember.get(0), event.getGuild().getRoleById("932112631546916884")).queue();
-				event.getChannel().sendMessage(mentionedMember.get(0).getAsMention() + " has been silenced").queue();
+				scts.sendMessage(event, mentionedMember.get(0).getAsMention() + " has been silenced", false);
 			} else if(event.getMember().isOwner() || !event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-				event.getMessage().reply("you cant do that").queue();
+				scts.sendMessage(event, "you cant do that", false);
 			}
 		}
 		if(args[0].equalsIgnoreCase(prefix + "hi")) {
-			event.getMessage().reply("Greetings, " + event.getAuthor().getAsMention()).queue();
+			scts.sendMessage(event, "Greetings, " + event.getAuthor().getAsMention(), true);
 		}
 		if(args[0].equalsIgnoreCase(prefix + "grease")) {
 			User user = event.getAuthor();
@@ -852,9 +855,9 @@ public class Commands extends ListenerAdapter {
 		}
 		if(args[0].equalsIgnoreCase(prefix + "oosted?")) {
 			if(event.getGuild().getBoostCount() == 0) {
-				event.getChannel().sendMessage("not oosted <:cubic:941574305748242493>").queue();
+				scts.sendMessage(event, "not oosted <:cubic:941574305748242493>", false);
 			} else if(event.getGuild().getBoostCount() > 0) {
-				event.getChannel().sendMessage("oosted (" + event.getGuild().getBoostCount() + ") times! <:aaaaaaaaaaahhhh:932080598066024448>").queue();
+				scts.sendMessage(event, "oosted (" + event.getGuild().getBoostCount() + ") times! <:aaaaaaaaaaahhhh:932080598066024448>", false);
 			}
 		}
 		if(args[0].equalsIgnoreCase("sundowner")) {
@@ -941,12 +944,12 @@ public class Commands extends ListenerAdapter {
 		}
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equalsIgnoreCase("jerma")) {
-				event.getMessage().addReaction("jerm:955920874349932624").queue();
+				scts.react(event, "jerm:955920874349932624");
 			}
 		}
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equalsIgnoreCase("ena")) {
-				event.getMessage().addReaction("enar:942667786612781066").queue();
+				scts.react(event, "enar:942667786612781066");
 			}
 		}
 		
@@ -985,6 +988,12 @@ public class Commands extends ListenerAdapter {
 			event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/945260997453697034/956772642617167882/Screenshot_358.png").queue();
 		}
 		
+		for(int i = 0; i < args.length; i++) {
+			if(args[i].equalsIgnoreCase("perchance")) {
+				scts.sendMessage(event, "https://cdn.discordapp.com/attachments/415604103020937218/959207715694080031/IMG_5913.png", false);
+			}
+		}
+		
 		if(args[0].equalsIgnoreCase(prefix + "differentiate")) {
 			int cons = Integer.parseInt(args[1].substring(0, 1));
 			String var = "x";
@@ -992,12 +1001,14 @@ public class Commands extends ListenerAdapter {
 			int consDeriv = exp * cons;
 			int expDeriv = exp - 1;
 			if(expDeriv == 1) {
-				event.getChannel().sendMessage(consDeriv + var).queue();
+				scts.sendMessage(event, consDeriv + var, false);
 			} else if(expDeriv > 1) {
-			event.getChannel().sendMessage(consDeriv + var + "^" + expDeriv).queue();
+				scts.sendMessage(event, consDeriv + var + "^" + expDeriv, false);
 			}
 		}
-		
+		if(args[0].equalsIgnoreCase("Test")) {
+			scts.sendMessage(event, "hi", true);
+		}
 		ArrayList<String> bannedWords = new ArrayList<String>();
 		File f = new File("C:/Users/mmmmm/Desktop/botgifs/bannedwords.txt");
 		Member owner = event.getGuild().getOwner();
@@ -1015,12 +1026,12 @@ public class Commands extends ListenerAdapter {
 		for(int i = 0; i < args.length; i++) {
 			for(String m : bannedWords) {
 				if(args[i].equalsIgnoreCase(m) && !event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-					event.getMessage().delete().queue();
+					scts.deleteMessage(event);
 					event.getMember().ban(100, "Racial Slur").queue();
-					event.getChannel().sendMessage(event.getAuthor().getAsMention() + " has been banned.").queue();
+					scts.sendMessage(event, event.getAuthor().getAsMention() + " has been banned.", false);
 				} else if(args[i].equalsIgnoreCase(m) && event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
 					Member alertee = isOwnerOnline ? owner : dig;
-					event.getMessage().delete().queue();
+					scts.deleteMessage(event);
 					alertee.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage(event.getAuthor().getAsMention() + " said " + m)).queue();
 				}
 			}
@@ -1028,7 +1039,7 @@ public class Commands extends ListenerAdapter {
 		}
 		try {
 			if(event.getMessage().getAttachments().get(0).getFileName().equals("image0-1-1.gif") && event.getMessage().getAttachments() != null) {
-				event.getChannel().sendMessage("https://media.discordapp.net/attachments/505823512754257920/844031336599519292/image0-1-1.gif").queue();
+				scts.sendMessage(event, "https://media.discordapp.net/attachments/505823512754257920/844031336599519292/image0-1-1.gif", false);
 			}
 		}catch(Exception e) {
 			return;
@@ -1036,7 +1047,29 @@ public class Commands extends ListenerAdapter {
 		
 	}
 
+	//New method so I do not have to suffer from carpal tunnel
+	/*
+	public void sendMessage(GuildMessageReceivedEvent event, String message, boolean isReply) {
+		if(isReply) {
+			event.getMessage().reply(message).queue();
+		} else {
+			event.getChannel().sendMessage(message).queue();
+		}
+	}
 	
+	//Overloaded method to send files
+	public void sendMessage(GuildMessageReceivedEvent event, File f) {
+		event.getChannel().sendFile(f).queue();
+	}
+	
+	public void deleteMessage(GuildMessageReceivedEvent event) {
+		event.getMessage().delete().queue();
+	}
+	
+	public void react(GuildMessageReceivedEvent event, String emote) {
+		event.getMessage().addReaction(emote).queue();
+	}
+	*/
 	public int joeCheck(int joeCount) {
 		if(joeCount >= 10) {
 			try {
