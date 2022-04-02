@@ -131,3 +131,4 @@ Diglis#9553 has been slopped
 slop reset
 nuking-test has been cleared
 ChickenBot shutdown for miscellaneous reasons
+java-crabs has been cleared

@@ -7,6 +7,12 @@ public class SlopTimer extends Thread {
 	File f = new File("bottimer.txt");
 	public void run() {
 		RuntimeMXBean uptime = ManagementFactory.getRuntimeMXBean();
-		System.out.println(uptime.getUptime() / 1000 + " second(s)");
+		boolean isMinute = false;
+		if((uptime.getUptime() / 1000) % 60 == 0 && isMinute) {
+			System.out.println((uptime.getUptime() / 1000) / 60 + " minute(s)");
+			isMinute = true;
+		} else if((uptime.getUptime() / 1000) % 60 != 0 && !isMinute) {
+			System.out.println(uptime.getUptime() / 1000 + " second(s)");
+		}
 	}
 }

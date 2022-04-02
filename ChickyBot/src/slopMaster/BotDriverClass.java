@@ -38,7 +38,7 @@ public class BotDriverClass {
 		System.out.println(file.readFile(file.joe));
 		File f = new File("uptime.txt");
 		printTimeToFile(f, false, 0);
-		int seconds = 0;
+		@SuppressWarnings("unused")
 		RuntimeMXBean uptime = ManagementFactory.getRuntimeMXBean();
 		boolean isRunning = true;
 		while(isRunning) {
